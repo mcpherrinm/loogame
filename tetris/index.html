@@ -1,31 +1,16 @@
 <!doctype html>
 
 <style>
-  * {
-    padding: 0;
-    margin: 0;
-  }
-  div#container > div {
-    line-height: 0.5em;
-  }
-  span {
-    height: 1em;
-    width: 1em;
-    display: inline-block;
-    border: 1px solid black;
-  }
-  span.I { background-color:cyan; }
-  span.J { background-color:blue; }
-  span.L { background-color:orange; }
-  span.O { background-color:yellow; }
-  span.S { background-color:green; }
-  span.T { background-color:purple; }
-  span.Z { background-color:red; }
+ @import url("tetris.css");
 </style>
 arrow keys move, up to rotate, space to drop
 <a href="javascript:start()">start</a>
 <a href="javascript:stop()">stop</a>
+<div id="roof"></div>
 <div id="container"></div>
+<div id="boxsupport"></div>
+<div id="platter"></div>
+<div id="scoops"></div>
 <script src="game.js?foo"></script>
 <script>
   setup();

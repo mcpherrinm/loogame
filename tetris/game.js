@@ -69,6 +69,7 @@ function setup() {
     }
     renderboard();
   }
+  start();
 }
 
 // Start running the game loop
