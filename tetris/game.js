@@ -43,19 +43,22 @@ function setup() {
   document.onkeyup = function(event) {
     var key = (event || window.event).keyCode;
     if(key == 37) { // left
-      if(pieceCol > 0) {
+      if(isClear(activePiece, pieceRow, pieceCol-1)) {
         pieceCol -= 1;
       }
     } else if(key == 39) { // right
-      if((pieceCol + activePiece[0].length) < width) {
+      if(isClear(activePiece, pieceRow, pieceCol+1)) {
        pieceCol += 1;
       }
     } else if(key == 32) { // space, to drop
-      if(candrop()) { // useful for testing
-        movedown();   // instead of hard drop, speed up
+      while(isClear(activePiece, pieceRow-1, pieceCol-1)) {
+        movedown();
       }
     } else if(key == 38) { // up arrow
-      rotate();
+      var rotated = rotate(activePiece);
+      if(isClear(rotated, pieceRow, pieceCol)){
+        activePiece = rotated;
+      }
     } else {
       return;
     }
@@ -94,7 +97,7 @@ function stop() {
 // This moves pieces down each drop tick.
 function tick() {
 
-  if(candrop()) {
+  if(isClear(activePiece, pieceRow-1, pieceCol-1)) {
     // drop active piece one row
     movedown();
   } else {
@@ -112,22 +115,25 @@ function tick() {
   renderboard();
 }
 
-// Does every nonzero element of the current piece have a
-// zero below it in the board, at its current height?
-function candrop() {
-  if(pieceRow > 0) {
-    for(var i = 0; i < activePiece.length; i++) {
-      for(var j = 0; j < activePiece[i].length; j++) {
-        if(activePiece[i][j] !== 0) {
-          if(board[pieceRow-1 + i][pieceCol + j]) {
-            return false;
+// Is the piece clear at (row, col)?
+// used to determine if a piece can drop, move, or rotate
+function isClear(piece, row, col) {
+  for(var i = 0; i < activePiece.length; i++) {
+    for(var j = 0; j < activePiece[i].length; j++) {
+      if(piece[i][j] !== 0) {
+        var r = row-1+i;
+        var c = col+j;
+        if(r >= 0 && r < height && c >= 0 && c < width) {
+          if(board[row-1 + i][col + j]) {
+            return false; // existing piece
           }
+        } else {
+          return false; // Piece outside board
         }
       }
     }
-    return true;
   }
-  return false;
+  return true;
 }
 
 // Move the active piece down a row
@@ -177,20 +183,18 @@ function newactive() {
 // Give points.
 function clearrows() {
   for(var row = 0; row < height; row++) {
-    var flag = false;
+    var hasZero = false;
     for(var col = 0; col < width; col++) {
       if(board[row][col] === 0) {
-        flag = true;
+        hasZero = true;
         continue;
       }
     }
-    if(!flag) {
+    if(!hasZero) { // This row is full, remove it.
       for(var i = row; i < height-1; i++) {
-        board[row] = board[row+1];
-      }
-      board[height-1] = [];
-      for(var col = 0; col < width; col++) {
-        board[height-1][col] = 0;
+        for(var j = 0; j < width; j++) {
+          board[i][j] = board[i+1][j];
+        }
       }
     }
   }
@@ -229,10 +233,13 @@ function renderboard() {
   // Render the active piece:
   var p = activePiece;
   for(var i = 0; i < activePiece.length; i++) {
-    var thisrow = boardRows[l - i - 1 - pieceRow].children;
-    for(var j = 0; j < activePiece[i].length; j++) {
-      if(activePiece[i][j]) {
-        thisrow[j + pieceCol].className = activePiece[i][j];
+    var rowidx = l - i - 1 - pieceRow;
+    if(rowidx < height && rowidx >= 0) { // WTF?
+      var thisrow = boardRows[rowidx].children;
+      for(var j = 0; j < activePiece[i].length; j++) {
+        if(activePiece[i][j]) {
+          thisrow[j + pieceCol].className = activePiece[i][j];
+        }
       }
     }
   }
