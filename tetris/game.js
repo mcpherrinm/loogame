@@ -54,6 +54,7 @@ function setup() {
       while(isClear(activePiece, pieceRow-1, pieceCol)) {
         movedown();
       }
+      finishpiece();
     } else if(key == 40) { // down arrow, go faster
       if(isClear(activePiece, pieceRow-1, pieceCol)) {
         movedown();
@@ -95,6 +96,8 @@ function start() {
 }
 
 function stop() {
+  // TODO: Remove keyboard handlers
+  // this is ghetto too, maybe remove the setTimeout so it doesn't tick anymore?
   stopflag = true;
 }
 
