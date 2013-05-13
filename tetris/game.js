@@ -51,7 +51,11 @@ function setup() {
        pieceCol += 1;
       }
     } else if(key == 32) { // space, to drop
-      while(isClear(activePiece, pieceRow-1, pieceCol-1)) {
+      while(isClear(activePiece, pieceRow-1, pieceCol)) {
+        movedown();
+      }
+    } else if(key == 40) { // down arrow, go faster
+      if(isClear(activePiece, pieceRow-1, pieceCol)) {
         movedown();
       }
     } else if(key == 38) { // up arrow
@@ -97,7 +101,7 @@ function stop() {
 // This moves pieces down each drop tick.
 function tick() {
 
-  if(isClear(activePiece, pieceRow-1, pieceCol-1)) {
+  if(isClear(activePiece, pieceRow-1, pieceCol)) {
     // drop active piece one row
     movedown();
   } else {
@@ -118,13 +122,13 @@ function tick() {
 // Is the piece clear at (row, col)?
 // used to determine if a piece can drop, move, or rotate
 function isClear(piece, row, col) {
-  for(var i = 0; i < activePiece.length; i++) {
-    for(var j = 0; j < activePiece[i].length; j++) {
+  for(var i = 0; i < piece.length; i++) {
+    for(var j = 0; j < piece[i].length; j++) {
       if(piece[i][j] !== 0) {
-        var r = row-1+i;
+        var r = row+i;
         var c = col+j;
         if(r >= 0 && r < height && c >= 0 && c < width) {
-          if(board[row-1 + i][col + j]) {
+          if(board[r][c]) {
             return false; // existing piece
           }
         } else {
