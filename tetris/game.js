@@ -4,7 +4,7 @@
 var board;
 var boardElt;
 var score;
-var piece;
+var activePiece;
 var pieceRow;
 var pieceCol;
 var height = 16;
@@ -12,19 +12,19 @@ var width = 10;
 var stopflag = false;
 
 var pieces = {
-  'I': [[1,1,1,1]],
-  'J': [[2,2,2],
-        [0,0,2]],
-  'L': [[3,3,3],
-        [3,0,0]],
-  'O': [[4,4],
-        [4,4]],
-  'S': [[0,5,5],
-        [5,5,0]],
-  'T': [[6,6,6],
-        [0,6,0]],
-  'Z': [[7,7,0],
-        [0,7,7]]};
+  'I': [['I','I','I','I']],
+  'J': [['J','J','J'],
+        [  0,  0,'J']],
+  'L': [['L','L','L'],
+        ['L',  0,  0]],
+  'O': [['O','O'],
+        ['O','O']],
+  'S': [[  0,'S','S'],
+        ['S','S',  0]],
+  'T': [['T','T','T'],
+        [  0,'T',  0]],
+  'Z': [['Z','Z',  0],
+        [  0,'Z','Z']]};
 
 ///  public interface:
 
@@ -47,9 +47,15 @@ function setup() {
         pieceCol -= 1;
       }
     } else if(key == 39) { // right
-      if((pieceCol + pieces[piece][0].length) < width) {
+      if((pieceCol + activePiece[0].length) < width) {
        pieceCol += 1;
       }
+    } else if(key == 32) { // space, to drop
+      if(candrop()) { // useful for testing
+        movedown();   // instead of hard drop, speed up
+      }
+    } else if(key == 38) { // up arrow
+      rotate();
     } else {
       return;
     }
@@ -110,10 +116,9 @@ function tick() {
 // zero below it in the board, at its current height?
 function candrop() {
   if(pieceRow > 0) {
-    var p = pieces[piece];
-    for(var i = 0; i < p.length; i++) {
-      for(var j = 0; j < p[i].length; j++) {
-        if(p[i][j] !== 0) {
+    for(var i = 0; i < activePiece.length; i++) {
+      for(var j = 0; j < activePiece[i].length; j++) {
+        if(activePiece[i][j] !== 0) {
           if(board[pieceRow-1 + i][pieceCol + j]) {
             return false;
           }
@@ -139,20 +144,33 @@ function finishpiece() {
 
 // Merge the active piece into the board
 function mergeactive() {
-  var p = pieces[piece];
-  for(var i = 0; i < p.length; i++) {
-    for(var j = 0; j < p[i].length; j++) {
-      if(p[i][j] !== 0) {
-        board[pieceRow + i][pieceCol + j] = piece;
+  for(var i = 0; i < activePiece.length; i++) {
+    for(var j = 0; j < activePiece[i].length; j++) {
+      if(activePiece[i][j] !== 0) {
+        board[pieceRow + i][pieceCol + j] = activePiece[i][j];
       }
     }
   }
 }
 
+function rotate(piece) {
+  var rotated = [];
+  for(var i = 0; i < piece[0].length; i++) {
+    rotated.push([]);
+  }
+  for(var i = piece.length-1; i >= 0; i--) {
+    var row = piece[i];
+    for(var j = 0; j < row.length; j++) {
+      rotated[j].push(row[j]);
+    }
+  }
+  return rotated;
+}
+
 function newactive() {
-  piece = randompiece();
-  pieceRow = height-(pieces[piece].length);
-  pieceCol = width/2 - Math.ceil(pieces[piece][0].length/2);
+  activePiece = pieces[randompiece()];
+  pieceRow = height-(activePiece.length);
+  pieceCol = width/2 - Math.ceil(activePiece[0].length/2);
 }
 
 // Find rows that are full, eliminate, and move down.
@@ -203,23 +221,18 @@ function renderboard() {
   var l = boardRows.length;
 
   for(var r = 0; r < height; r++) {
+    var thisrow = boardRows[l - r - 1].children;
     for(var col = 0; col < width; col++) {
-      var it = board[r][col];
-      var clss;
-      if(it !== 0) {
-        clss = it;
-      } else {
-        clss = "";
-      }
-      boardRows[l - r - 1].children[col].className = clss;
+      thisrow[col].className = board[r][col];
     }
   }
   // Render the active piece:
-  var p = pieces[piece];
-  for(var i = 0; i < p.length; i++) {
-    for(var j = 0; j < p[i].length; j++) {
-      if(p[i][j] !== 0) {
-        boardRows[l - i - 1 - pieceRow].children[j + pieceCol].className = piece;
+  var p = activePiece;
+  for(var i = 0; i < activePiece.length; i++) {
+    var thisrow = boardRows[l - i - 1 - pieceRow].children;
+    for(var j = 0; j < activePiece[i].length; j++) {
+      if(activePiece[i][j]) {
+        thisrow[j + pieceCol].className = activePiece[i][j];
       }
     }
   }
