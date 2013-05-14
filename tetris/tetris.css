@@ -1,0 +1,91 @@
+#sky {
+  background-image: linear-gradient(to bottom, #144BFF 0%, #00A3EF 100%);
+}
+
+#midsky {
+  background-color: #00A3EF;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+div#roof {
+  width: 6em;
+  height: 0;
+  border-bottom: 1.5em solid #666;
+  border-left: 0.8em solid transparent;
+  border-right: 0.8em solid transparent;
+  margin: auto;
+  padding-top: 5em;
+}
+
+div#container {
+  background-color: #E3DFDE;
+  width: 12em;
+  height: 18em;
+  text-align: center;
+  padding: 1em;
+  margin: auto;
+  border: 3px solid #6C676E;
+  border-bottom: 0;
+}
+
+div#boxsupport {
+  border-top: 1em solid #222;
+  border-left: 0.8em solid transparent;
+  border-right: 0.8em solid transparent;
+  width: 12.8em;
+  margin: auto;
+}
+
+div#platter {
+  background-color: #E3DFDE;
+  width: 18em;
+  height: 2em;
+  margin: auto;
+}
+
+div#scoops {
+  height: 1.5em;
+  background-color: #BBB;
+  width: 18em;
+  margin: auto;
+  overflow: hidden;
+}
+
+div#scoops > span {
+  height: 1.5em;
+  width: 1.375em;
+  display: inline-block;
+  background-color: #555;
+}
+
+div#scoops > span.left {
+  border-radius: 0 2em 0 0;
+}
+div#scoops > span.right {
+  border-radius: 2em 0 0 0;
+}
+
+div#scoops > span.edge {
+  background-color: #00A3EF;
+}
+
+div#container > div {
+  line-height: 0.5em;
+}
+div#container > div > span {
+  height: 1em;
+  width: 1em;
+  display: inline-block;
+  border: 1px solid black;
+}
+span.I { background-color:cyan; }
+span.J { background-color:blue; }
+span.L { background-color:orange; }
+span.O { background-color:yellow; }
+span.S { background-color:green; }
+span.T { background-color:purple; }
+span.Z { background-color:red; }
